@@ -1,4 +1,4 @@
-# 📈 Retail Sales Forecasting – Favorita Dataset      
+# Retail Sales Forecasting - Favorita Dataset
 
 ## Project Overview
 This project focuses on time series forecasting of daily retail sales using historical data from Favorita grocery stores in Ecuador. The objective is to compare different forecasting approaches—statistical, business-oriented, and machine learning models—and determine which model provides the most reliable sales predictions for real-world retail planning.
@@ -45,14 +45,14 @@ Key datasets include:
 
 Three different forecasting approaches were implemented and evaluated:
 
-**1. ARIMA (Statistical Model)**
+**1. ARIMA / SARIMAX (Statistical Model)**
 - Aggregated daily total sales
-- Stationarity checks and differencing applied
-- ARIMA parameters selected through experimentation
-- Suitable for capturing trend and seasonality in a univariate setting
+- Stationarity checks (ADF test) and first-order differencing applied
+- ARIMA(1,1,1) baseline extended to SARIMAX with weekly seasonality (s=7), holiday flag, and oil price as external regressors
+- Suitable for capturing trend, seasonality, and external factor effects in a univariate setting
 
 Notebook:
-**[Arima Model](https://github.com/sevilkck/favorita-sales-forecasting/edit/main/README.md#:~:text=02_Favorita_ARIMA_Forecasting.ipynb)**
+**[ARIMA / SARIMAX Model](Notebooks/02_Favorita_ARIMA_Forecasting.ipynb)**
 
 **2. Prophet (Business-Oriented Model)**
 - Daily aggregated sales
@@ -61,42 +61,50 @@ Notebook:
 - Minimal feature engineering required
 
 Notebook:
-**[Prophet Model](https://github.com/sevilkck/favorita-sales-forecasting/edit/main/README.md#:~:text=03_Favorita_PROPHET_Forecasting.ipynb)**
+**[Prophet Model](Notebooks/03_Favorita_PROPHET_Forecasting.ipynb)**
 
 **3. XGBoost (Machine Learning Model)**
 - Supervised learning formulation of the time series
 - Feature engineering including:
-- Lag features
-- Rolling averages
-- Calendar-based features
-- Baseline model followed by hyperparameter tuning
+  - Lag features (1, 7, 14, 28 days)
+  - Rolling averages and standard deviations
+  - Calendar-based features (day of week, month, weekend flag)
+  - External regressors (holiday flag, oil price)
+- Baseline model followed by early stopping optimization
 - Most flexible but computationally intensive approach
 
 Notebook:
-**[XGBoost](https://github.com/sevilkck/favorita-sales-forecasting/edit/main/README.md#:~:text=04_Favorita_XGBoost_Forecasting.ipynb)**
+**[XGBoost Model](Notebooks/04_Favorita_XGBoost_Forecasting.ipynb)**
+
+**Data Preparation:**
+**[Data Preparation Notebook](Notebooks/01_Favorita_Data_Prep.ipynb)**
 
 ## Evaluation Metrics
 
 All models were evaluated using the same metrics to ensure fair comparison:
 - MAE (Mean Absolute Error)
 - RMSE (Root Mean Squared Error)
-- MAPE (Mean Absolute Percentage Error)
+- Bias (systematic over/underprediction)
 
 Additionally:
 - Actual vs. predicted values were visualized
-- Training time was recorded for each model
+- Residual diagnostics were performed for each model
 
 ## Model Comparison Summary
 Models were evaluated based on their ability to minimize error during high-volatility retail events.
 
 | Model Strategy | Mean Absolute Error (MAE) | Root Mean Squared Error (RMSE) |
 | :--- | :--- | :--- |
-| **Prophet** | **~285.8** | **~485.1** |
-| **XGBoost** | **~288.6** | **~499.3** |
-| **ARIMA** | **~316.8** | **~497.7** |
+| **Prophet Baseline** | **~285.8** | **~485.1** |
+| Prophet + Holidays | ~285.3 | ~484.5 |
+| XGBoost Optimized | ~288.6 | ~499.3 |
+| XGBoost Baseline | ~291.3 | ~500.9 |
+| SARIMAX | ~316.8 | ~497.7 |
+| ARIMA | ~343.4 | ~548.4 |
 
 * Under a clean and conservative evaluation framework, Prophet outperformed XGBoost and ARIMA, demonstrating that simpler, well-specified time-series models can surpass more complex machine learning approaches when tuning and feature engineering are constrained.
 * It is noted that reported XGBoost performance in the literature often relies on extensive hyperparameter optimization or less strict evaluation protocols. Therefore, the results presented here emphasize methodological robustness over maximal predictive performance.
+* All models significantly outperform a naive baseline (MAE: 429.57), confirming that each approach adds real predictive value.
 
 
 ## Prepared by :
@@ -104,4 +112,4 @@ Models were evaluated based on their ability to minimize error during high-volat
 
 **Date:** January 2026
 
-Masterschool Data Science Course 
+Masterschool Data Science Course
